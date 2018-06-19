@@ -28,9 +28,12 @@ public class PostController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Connection conn = MysqlUtils.getStoredConnection(request);
+        DBUtils db = new DBUtils();
+        MysqlUtils mysqlUtils = new MysqlUtils();
+
+        Connection conn = mysqlUtils.getStoredConnection(request);
         HttpSession session = request.getSession();
-        UserAccount loginedUser = MysqlUtils.getLoginedUser(session);
+        UserAccount loginedUser = mysqlUtils.getLoginedUser(session);
         int postId;
 
         // Если не залогинен - кидает шоб логинился
@@ -49,7 +52,7 @@ public class PostController extends HttpServlet {
         }
 
         try {
-            request.setAttribute("postq", DBUtils.retrieve(conn,postId));
+            request.setAttribute("postq", db.retrieve(postId));
        /*     List<Post> postq = DBUtils.retrieve(conn,postId);
             request.setAttribute("postq", postq);*/
         } catch (SQLException e) {
@@ -58,7 +61,7 @@ public class PostController extends HttpServlet {
         }
 
         try {
-            List<Comment> comments = DBUtils.retrieveComment(conn,postId);
+            List<Comment> comments = db.retrieveComment(postId);
             request.setAttribute("comments", comments);
 
         } catch (SQLException e) {
@@ -71,9 +74,12 @@ public class PostController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Connection conn = MysqlUtils.getStoredConnection(request);
+        DBUtils db = new DBUtils();
+        MysqlUtils mysqlUtils = new MysqlUtils();
+
+        Connection conn = mysqlUtils.getStoredConnection(request);
         HttpSession session = request.getSession();
-        UserAccount loginedUser = MysqlUtils.getLoginedUser(session);
+        UserAccount loginedUser = mysqlUtils.getLoginedUser(session);
         int postId;
 
         // Если не залогинен - кидает шоб логинился
@@ -99,7 +105,7 @@ public class PostController extends HttpServlet {
         Comment cmnt = new Comment(comment, loginedUser.getUserName(),postId);
         //Если благополучно вставил коммент - перенаправляет.
         try {
-            DBUtils.insertComment(conn,cmnt);
+            db.insertComment(cmnt);
 
         } catch (SQLException e ){
             e.printStackTrace();

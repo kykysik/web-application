@@ -20,7 +20,10 @@ public class DeleteComments extends HttpServlet{
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
-        Connection conn = MysqlUtils.getStoredConnection(request);
+        MysqlUtils mysqlUtils = new MysqlUtils();
+
+        DBUtils db = new DBUtils();
+        Connection conn = mysqlUtils.getStoredConnection(request);
 
         String id = request.getParameter("id");
         String postId = request.getParameter("postId");
@@ -33,7 +36,7 @@ public class DeleteComments extends HttpServlet{
         }
 
         try {
-            DBUtils.deleteComments(conn, id, postId);
+            db.deleteComments(id, postId);
         } catch (SQLException e) {
             e.printStackTrace();
         }

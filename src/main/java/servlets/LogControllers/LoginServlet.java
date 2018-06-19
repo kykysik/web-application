@@ -39,6 +39,8 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        DBUtils db = new DBUtils();
+        MysqlUtils mysqlUtils = new MysqlUtils();
         String userName = request.getParameter("userName");
         String password = request.getParameter("password");
         String rememberMeStr = request.getParameter("rememberMe");
@@ -52,10 +54,10 @@ public class LoginServlet extends HttpServlet {
             hasError = true;
             errorString = "Required username and password!";
         } else {
-            Connection conn = MysqlUtils.getStoredConnection(request);
+            Connection conn = mysqlUtils.getStoredConnection(request);
             try {
                 // Найти user в DB.
-                user = DBUtils.findUser(conn, userName, password);
+                user = db.findUser(userName, password);
 
                 if (user == null) {
                     hasError = true;
@@ -89,15 +91,15 @@ public class LoginServlet extends HttpServlet {
         // И перенаправить к странице userInfo.
         else {
             HttpSession session = request.getSession();
-            MysqlUtils.storeLoginedUser(session, user);
+            mysqlUtils.storeLoginedUser(session, user);
 
             // Если пользователь выбирает функцию "Remember me".
             if (remember) {
-                MysqlUtils.storeUserCookie(response, user);
+                mysqlUtils.storeUserCookie(response, user);
             }
             // Наоборот, удалить Cookie
             else {
-                MysqlUtils.deleteUserCookie(response);
+                mysqlUtils.deleteUserCookie(response);
             }
 
             // Redirect (Перенаправить) на страницу /userInfo.

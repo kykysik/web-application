@@ -24,8 +24,10 @@ public class logOutServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
-        UserAccount log = MysqlUtils.getLoginedUser(session);
-        MysqlUtils.deleteUserCookie(resp);
+        MysqlUtils mysqlUtils = new MysqlUtils();
+
+        UserAccount log = mysqlUtils.getLoginedUser(session);
+        mysqlUtils.deleteUserCookie(resp);
         session.invalidate();
 
         // Redirect (Перенаправить) к странице login.

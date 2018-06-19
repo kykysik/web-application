@@ -33,10 +33,13 @@ public class PostListController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Connection conn = MysqlUtils.getStoredConnection(request);
+        DBUtils db = new DBUtils();
+        MysqlUtils mysqlUtils = new MysqlUtils();
+
+        Connection conn = mysqlUtils.getStoredConnection(request);
         HttpSession session = request.getSession();
         // Проверить, вошел ли пользователь в систему (login) или нет.
-        UserAccount loginedUser = MysqlUtils.getLoginedUser(session);
+        UserAccount loginedUser = mysqlUtils.getLoginedUser(session);
         if (loginedUser == null) {
             request.setAttribute("msgError", "It's necessary to be logged in to load that page.");
             request.getRequestDispatcher("login").forward(request, response);
@@ -45,7 +48,7 @@ public class PostListController extends HttpServlet {
 
         //Список постов
         try {
-            List<Post> posts = DBUtils.listPost(conn);
+            List<Post> posts = db.listPost();
             request.setAttribute("postList", posts);
         } catch (SQLException e) {
             e.printStackTrace();

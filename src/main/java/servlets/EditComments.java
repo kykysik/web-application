@@ -18,7 +18,10 @@ public class EditComments extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        Connection conn = MysqlUtils.getStoredConnection(request);
+        DBUtils db = new DBUtils();
+        MysqlUtils mysqlUtils = new MysqlUtils();
+
+        Connection conn = mysqlUtils.getStoredConnection(request);
 
         String id = request.getParameter("id");
         String postId = request.getParameter("postId");
@@ -27,7 +30,7 @@ public class EditComments extends HttpServlet {
         String errorString = null;
 
         try {
-            editComments = DBUtils.findComment(conn, id, postId);
+            editComments = db.findComment(id, postId);
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -54,7 +57,10 @@ public class EditComments extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        Connection conn = MysqlUtils.getStoredConnection(request);
+        DBUtils db = new DBUtils();
+        MysqlUtils mysqlUtils = new MysqlUtils();
+
+        Connection conn = mysqlUtils.getStoredConnection(request);
 
         String code = request.getParameter("id");
         String userName = request.getParameter("userName");
@@ -75,7 +81,7 @@ public class EditComments extends HttpServlet {
         String errorString = null;
 
         try {
-            DBUtils.updateComments(conn, upComments);
+            db.updateComments(upComments);
         } catch (SQLException e) {
             e.printStackTrace();
             errorString = e.getMessage();

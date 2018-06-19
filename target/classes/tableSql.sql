@@ -9,15 +9,6 @@ create table USER_ACCOUNT
   primary key (USER_NAME)
 );
 
--- Create table
-create table PRODUCT
-(
-  CODE  VARCHAR(20) not null,
-  NAME  VARCHAR(128) not null,
-  PRICE FLOAT not null,
-  primary key (CODE)
-);
-
 CREATE TABLE POSTS
 (
   POST_ID MEDIUMINT NOT NULL AUTO_INCREMENT,
@@ -48,12 +39,6 @@ values ('tom', 'M', 'tom001');
 
 insert into USER_ACCOUNT (USER_NAME, GENDER, PASSWORD)
 values ('jerry', 'M', 'jerry001');
-
-insert into PRODUCT (CODE, NAME, PRICE)
-values ('P001', 'Java Core', 100);
-
-insert into PRODUCT (CODE, NAME, PRICE)
-values ('P002', 'C# Core', 90);
 
 INSERT INTO POSTS(POST_ID, TITLE, CONTENT, USER_NAME)
 VALUES (0,'KEK','AZAZA','tom') ;

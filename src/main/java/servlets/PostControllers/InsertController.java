@@ -34,11 +34,14 @@ public class InsertController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Connection conn = MysqlUtils.getStoredConnection(request);
+        MysqlUtils mysqlUtils = new MysqlUtils();
+
+        Connection conn = mysqlUtils.getStoredConnection(request);
+        DBUtils db = new DBUtils();
 
         HttpSession session = request.getSession();
 
-        UserAccount loginedUser = MysqlUtils.getLoginedUser(session);
+        UserAccount loginedUser = mysqlUtils.getLoginedUser(session);
 
         if (loginedUser == null) {
             request.setAttribute("msgError", "It's necessary to be logged in to load that page.");
@@ -57,7 +60,7 @@ public class InsertController extends HttpServlet {
             return;
         }
         try {
-            DBUtils.insert(conn,new Post(title, content, loginedUser.getUserName()));
+            db.insert(new Post(title, content, loginedUser.getUserName()));
         }catch (SQLException e){
             e.printStackTrace();
         }

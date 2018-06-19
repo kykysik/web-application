@@ -32,7 +32,10 @@ public class Registration extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        Connection conn = MysqlUtils.getStoredConnection(request);
+        MysqlUtils mysqlUtils = new MysqlUtils();
+
+        Connection conn = mysqlUtils.getStoredConnection(request);
+        DBUtils db = new DBUtils();
 
         String userName = request.getParameter("userName");
         String gender =  request.getParameter("gender");
@@ -52,7 +55,7 @@ public class Registration extends HttpServlet {
         else {
 
             try {
-               DBUtils.registr(conn, account);
+               db.registr(account);
             } catch (SQLException e) {
                 e.printStackTrace();
                 errorString = e.getMessage();

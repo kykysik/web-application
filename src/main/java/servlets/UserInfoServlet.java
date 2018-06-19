@@ -24,9 +24,11 @@ public class UserInfoServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        MysqlUtils mysqlUtils = new MysqlUtils();
+
         HttpSession session = request.getSession();
         // Проверить, вошел ли пользователь в систему (login) или нет.
-        UserAccount loginedUser = MysqlUtils.getLoginedUser(session);
+        UserAccount loginedUser = mysqlUtils.getLoginedUser(session);
 
 
         // Если еще не вошел в систему (login).

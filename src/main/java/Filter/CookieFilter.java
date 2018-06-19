@@ -34,9 +34,11 @@ public class CookieFilter implements Filter {
             throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpSession session = req.getSession();
+        DBUtils db = new DBUtils();
+        MysqlUtils mysqlUtils = new MysqlUtils();
 
 
-        UserAccount userInSession = MysqlUtils.getLoginedUser(session);
+        UserAccount userInSession = mysqlUtils.getLoginedUser(session);
         //
         if (userInSession != null) {
             session.setAttribute("COOKIE_CHECKED", "CHECKED");
@@ -45,15 +47,15 @@ public class CookieFilter implements Filter {
         }
 
         // Connection создан в JDBCFilter.
-        Connection conn = MysqlUtils.getStoredConnection(request);
+        Connection conn = mysqlUtils.getStoredConnection(request);
 
         // Флаг(flag) для проверки Cookie.
         String checked = (String) session.getAttribute("COOKIE_CHECKED");
         if (checked == null && conn != null) {
-            String userName = MysqlUtils.getUserNameInCookie(req);
+            String userName = mysqlUtils.getUserNameInCookie(req);
             try {
-                UserAccount user = DBUtils.findUser(conn, userName);
-                MysqlUtils.storeLoginedUser(session, user);
+                UserAccount user = db.findUser(userName);
+                mysqlUtils.storeLoginedUser(session, user);
             } catch (SQLException e) {
                 e.printStackTrace();
             }

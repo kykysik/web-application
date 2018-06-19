@@ -58,7 +58,8 @@ public class JDBCFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-
+        ConUt conUt = new ConUt();
+        MysqlUtils mysqlUtils = new MysqlUtils();
         HttpServletRequest req = (HttpServletRequest) request;
 
         // Открыть  connection (соединение) только для request со специальной ссылкой.
@@ -72,13 +73,13 @@ public class JDBCFilter implements Filter {
             Connection conn = null;
             try {
                 // Создать объект Connection подключенный к database.
-                conn = ConUt.getConnection();
+                conn = conUt.getConnection();
 
                 // Настроить автоматический commit false, чтобы активно контролировать.
                 conn.setAutoCommit(false);
 
                 // Сохранить объект Connection в attribute в request.
-                MysqlUtils.storeConnection(request,conn);
+                mysqlUtils.storeConnection(request);
                 // Разрешить request продвигаться далее.
                 // (Далее к следующему Filter к цели).
 
@@ -89,10 +90,10 @@ public class JDBCFilter implements Filter {
             } catch (Exception e) {
                 e.printStackTrace();
                // Откат.
-                ConUt.rollbackQuietly(conn);
+                conUt.rollbackQuietly(conn);
                 throw new ServletException();
             } finally {
-                ConUt.closeQuietly(conn);
+                conUt.closeQuietly(conn);
             }
         }
         // Для обычных request (image,css,html,..)

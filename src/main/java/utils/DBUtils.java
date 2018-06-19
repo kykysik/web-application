@@ -1,8 +1,10 @@
 package utils;
 
+import DAO.DaoApp;
 import beans.Comment;
 import beans.Post;
 import beans.UserAccount;
+import connections.ConUt;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,11 +13,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DBUtils {
-    public static UserAccount findUser(Connection conn,
-                                       String userName, String password) throws SQLException {
-
+public class DBUtils implements DaoApp {
+    public  UserAccount findUser(String userName, String password) throws SQLException {
         String sql = "SELECT USER_NAME, GENDER, PASSWORD from USER_ACCOUNT WHERE USER_NAME = ? AND  PASSWORD = ?";
+         ConUt conUt = new ConUt();
+        try(Connection conn = conUt.getConnection()) {
 
         PreparedStatement pstm = conn.prepareStatement(sql);
         pstm.setString(1, userName);
@@ -30,12 +32,20 @@ public class DBUtils {
             user.setGender(gender);
             return user;
         }
+
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+
         return null;
     }
 
-    public static void registr(Connection conn, UserAccount account) throws SQLException {
+    public  void registr(UserAccount account) throws SQLException {
+        String sql = "INSERT INTO USER_ACCOUNT(USER_NAME,GENDER, PASSWORD) VALUES (?,?,?)";
+        ConUt conUt = new ConUt();
+        try(Connection conn = conUt.getConnection()) {
 
-         String sql = "INSERT INTO USER_ACCOUNT(USER_NAME,GENDER, PASSWORD) VALUES (?,?,?)";
          PreparedStatement pstm = conn.prepareStatement(sql);
          pstm.setString(1, account.getUserName());
          pstm.setString(2, account.getGender());
@@ -43,11 +53,16 @@ public class DBUtils {
 
          pstm.executeUpdate();
 
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
     }
 
-    public static UserAccount findUser(Connection conn, String userName) throws SQLException {
-
+    public  UserAccount findUser(String userName) throws SQLException {
         String sql = "SELECT USER_NAME, GENDER, PASSWORD FROM USER_ACCOUNT WHERE USER_NAME = ?";
+        ConUt conUt = new ConUt();
+        try(Connection conn = conUt.getConnection()) {
 
         PreparedStatement pstm = conn.prepareStatement(sql);
         pstm.setString(1, userName);
@@ -63,21 +78,37 @@ public class DBUtils {
             user.setGender(gender);
             return user;
         }
+
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
-    public static void insertComment(Connection conn, Comment comm) throws SQLException {
+    public  void insertComment(Comment comm) throws SQLException {
         String sql = "INSERT INTO COMMENTS(CONTENT, USER_NAME, POST_ID) VALUES (?, ?, ?)";
+        ConUt conUt = new ConUt();
+        try(Connection conn = conUt.getConnection()) {
+
         PreparedStatement pstm = conn.prepareStatement(sql);
         pstm.setString(1,comm.getContent());
         pstm.setString(2,comm.getLogin());
         pstm.setInt(3,comm.getPostId());
         pstm.executeUpdate();
+
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
     }
 
-    public static List<Comment> retrieveComment(Connection conn, int postId) throws SQLException {
+    public  List<Comment> retrieveComment(int postId) throws SQLException {
         String sql= "SELECT * FROM COMMENTS WHERE POST_ID=? ORDER BY COMMENT_ID ASC";
+        ConUt conUt = new ConUt();
         List<Comment> comments = new ArrayList<>();
+
+        try(Connection conn = conUt.getConnection()) {
+
         PreparedStatement pstm = conn.prepareStatement(sql);
         pstm.setInt(1, postId);
         ResultSet rs = pstm.executeQuery();
@@ -87,22 +118,37 @@ public class DBUtils {
             int id = rs.getInt("comment_id");
             comments.add(new Comment(id, content, login, postId));
         }
+
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         return comments;
     }
 
 
-    public static void insert(Connection conn, Post post) throws SQLException {
+    public  void insert(Post post) throws SQLException {
         String sql = "INSERT INTO POSTS(TITLE, CONTENT, USER_NAME) VALUES (?, ?, ?)";
+        ConUt conUt = new ConUt();
+        try(Connection conn = conUt.getConnection()) {
+
         PreparedStatement pstm = conn.prepareStatement(sql);
         pstm.setString(1, post.getTitle() );
         pstm.setString(2, post.getContent());
         pstm.setString(3, post.getLogin());
         pstm.executeUpdate();
+
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
-    public static List<Post> listPost(Connection conn) throws SQLException {
-        List<Post> posts = new ArrayList<>();
+    public  List<Post> listPost() throws SQLException {
+        ConUt conUt = new ConUt();
         String sql = "SELECT * FROM POSTS ORDER BY POST_ID DESC";
+        List<Post> posts = new ArrayList<>();
+
+        try(Connection conn = conUt.getConnection()) {
+
         PreparedStatement pstm = conn.prepareStatement(sql);
         ResultSet rs = pstm.executeQuery();
         while (rs.next()) {
@@ -112,12 +158,20 @@ public class DBUtils {
             String user_name = rs.getString("user_name");
             posts.add(new Post(id,title,content,user_name));
         }
+
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         return posts;
     }
 
-    public static List<Post> retrieve(Connection conn, int id) throws SQLException {
+    public  List<Post> retrieve(int id) throws SQLException {
+        ConUt conUt = new ConUt();
         String sql = "SELECT * FROM POSTS WHERE post_id=?";
         List<Post> posts = new ArrayList<>();
+
+        try(Connection conn = conUt.getConnection()) {
+
         PreparedStatement pstm = conn.prepareStatement(sql);
         pstm.setInt(1, id);
         ResultSet rs = pstm.executeQuery();
@@ -127,11 +181,17 @@ public class DBUtils {
             String user_name = rs.getString("user_name");
              posts.add(new Post(id,title,content,user_name));
         }
+
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         return posts;
     }
 
-    public static void updateComments(Connection conn, Comment comment) throws SQLException {
+    public  void updateComments(Comment comment) throws SQLException {
         String sql = "UPDATE COMMENTS SET CONTENT = ? WHERE  COMMENT_ID = ? AND POST_ID = ?";
+        ConUt conUt = new ConUt();
+        try(Connection conn = conUt.getConnection()) {
 
         PreparedStatement pstm = conn.prepareStatement(sql);
 
@@ -139,21 +199,32 @@ public class DBUtils {
         pstm.setInt(2, comment.getId());
         pstm.setInt(3, comment.getPostId());
         pstm.executeUpdate();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
-    public static void deleteComments(Connection conn, String id, String postId) throws SQLException {
+    public  void deleteComments(String id, String postId) throws SQLException {
         String sql = "DELETE FROM COMMENTS WHERE COMMENT_ID = ? AND POST_ID = ?";
+        ConUt conUt = new ConUt();
+
+        try(Connection conn = conUt.getConnection()) {
 
         PreparedStatement pstm = conn.prepareStatement(sql);
-
         pstm.setString(1, id);
         pstm.setString(2, postId);
 
         pstm.executeUpdate();
+
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
-    public static Comment findComment(Connection conn, String id, String postId) throws SQLException {
+    public  Comment findComment(String id, String postId) throws SQLException {
         String sql = "Select COMMENT_ID, CONTENT, USER_NAME, POST_ID FROM COMMENTS WHERE COMMENT_ID = ? AND POST_ID = ?";
+        ConUt conUt = new ConUt();
+        try(Connection conn = conUt.getConnection()) {
 
         PreparedStatement pstm = conn.prepareStatement(sql);
         pstm.setString(1, id);
@@ -168,6 +239,10 @@ public class DBUtils {
             String content = rs.getString("content");
             Comment comment = new Comment(code, content, userName,postCode);
             return comment;
+        }
+
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         }
         return null;
     }
